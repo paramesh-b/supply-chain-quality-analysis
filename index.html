@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FC Supply Chain Quality Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #f5f5f5; color: #222; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #666; margin-bottom: 20px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: #fff; border-radius: 8px; padding: 16px; border: 1px solid #e0e0e0; }
+  .kpi-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 600; color: #222; }
+  .kpi-sub { font-size: 12px; color: #888; margin-top: 4px; }
+  .insights { background: #eef4ff; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; gap: 24px; flex-wrap: wrap; }
+  .insight { font-size: 13px; color: #444; }
+  .insight strong { color: #1a56db; }
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+  .card { background: #fff; border-radius: 8px; padding: 16px; border: 1px solid #e0e0e0; }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .card-desc { font-size: 12px; color: #888; margin-bottom: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #555; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; font-size: 12px; color: #888; padding: 8px; border-bottom: 1px solid #eee; }
+  td { padding: 8px; border-bottom: 1px solid #eee; color: #333; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .high { background: #fde8e8; color: #c81e1e; }
+  .med { background: #fef3c7; color: #92400e; }
+  .low { background: #def7ec; color: #03543f; }
+</style>
+</head>
+<body>
+
+<h1>FC Supply Chain Quality Analytics Dashboard</h1>
+<p class="sub">Supply chain defect analysis · 100 SKUs · 5 suppliers · 3 product categories</p>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-label">Avg defect rate</div><div class="kpi-value">2.31%</div><div class="kpi-sub">Across all product types</div></div>
+  <div class="kpi"><div class="kpi-label">Total SKUs analysed</div><div class="kpi-value">100</div><div class="kpi-sub">3 product categories</div></div>
+  <div class="kpi"><div class="kpi-label">Failed inspections</div><div class="kpi-value">36</div><div class="kpi-sub">36% overall failure rate</div></div>
+  <div class="kpi"><div class="kpi-label">Highest risk supplier</div><div class="kpi-value">S4</div><div class="kpi-sub">66.7% failure rate</div></div>
+</div>
+
+<div class="insights">
+  <div class="insight">Road transport has <strong>44% higher defect rate</strong> than air</div>
+  <div class="insight">Cosmetics/Supplier 3 = <strong>highest defect rate at 3.87%</strong></div>
+  <div class="insight">Skincare generates <strong>highest revenue: £241,628</strong></div>
+  <div class="insight">Supplier 4 has <strong>worst failure rate: 66.7%</strong></div>
+</div>
+
+<div class="charts-grid">
+  <div class="card">
+    <div class="card-title">Defect rate by product type</div>
+    <div class="card-desc">Average defect rate and inspection outcomes per category</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Avg defect rate</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span>Failed inspections</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>Passed inspections</span>
+    </div>
+    <div style="position:relative;height:220px;"><canvas id="chart1"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Supplier quality ranking</div>
+    <div class="card-desc">Average defect rate and failure rate % by supplier</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#D4537E"></span>Avg defect rate</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#EF9F27"></span>Failure rate %</span>
+    </div>
+    <div style="position:relative;height:220px;"><canvas id="chart2"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Transportation mode vs defect rate</div>
+    <div class="card-desc">Road has highest defects despite lower shipping cost</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Avg defect rate</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#7F77DD"></span>Avg shipping cost (£)</span>
+    </div>
+    <div style="position:relative;height:220px;"><canvas id="chart3"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Revenue vs defect rate by product type</div>
+    <div class="card-desc">Skincare: highest revenue but elevated defect rate</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Total revenue (£)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span>Avg defect rate</span>
+    </div>
+    <div style="position:relative;height:220px;"><canvas id="chart4"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Stock risk matrix — product type × supplier</div>
+  <div class="card-desc">Risk classification based on stock levels and defect rates</div>
+  <table>
+    <thead>
+      <tr><th>Product type</th><th>Supplier</th><th>Avg stock</th><th>Avg lead time</th><th>Avg defect rate</th><th>Risk level</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Cosmetics</td><td>Supplier 3</td><td>67</td><td>2</td><td>3.87%</td><td><span class="badge low">LOW RISK</span></td></tr>
+      <tr><td>Skincare</td><td>Supplier 5</td><td>43</td><td>15</td><td>3.47%</td><td><span class="badge low">LOW RISK</span></td></tr>
+      <tr><td>Haircare</td><td>Supplier 5</td><td>54</td><td>16</td><td>2.77%</td><td><span class="badge low">LOW RISK</span></td></tr>
+      <tr><td>Skincare</td><td>Supplier 2</td><td>40</td><td>24</td><td>2.65%</td><td><span class="badge med">MEDIUM RISK</span></td></tr>
+      <tr><td>Haircare</td><td>Supplier 4</td><td>60</td><td>17</td><td>2.58%</td><td><span class="badge low">LOW RISK</span></td></tr>
+      <tr><td>Skincare</td><td>Supplier 3</td><td>39</td><td>15</td><td>2.54%</td><td><span class="badge med">MEDIUM RISK</span></td></tr>
+      <tr><td>Haircare</td><td>Supplier 2</td><td>39</td><td>12</td><td>2.45%</td><td><span class="badge med">MEDIUM RISK</span></td></tr>
+      <tr><td>Skincare</td><td>Supplier 1</td><td>34</td><td>16</td><td>1.67%</td><td><span class="badge med">MEDIUM RISK</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+new Chart(document.getElementById('chart1'), {
+  type: 'bar',
+  data: {
+    labels: ['Haircare', 'Skincare', 'Cosmetics'],
+    datasets: [
+      { label: 'Avg defect rate', data: [2.48, 2.33, 1.92], backgroundColor: '#378ADD', borderRadius: 3 },
+      { label: 'Failed', data: [13, 13, 10], backgroundColor: '#E24B4A', borderRadius: 3 },
+      { label: 'Passed', data: [6, 11, 6], backgroundColor: '#639922', borderRadius: 3 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('chart2'), {
+  type: 'bar',
+  data: {
+    labels: ['Supplier 5', 'Supplier 3', 'Supplier 2', 'Supplier 4', 'Supplier 1'],
+    datasets: [
+      { label: 'Avg defect rate', data: [2.67, 2.47, 2.36, 2.34, 1.80], backgroundColor: '#D4537E', borderRadius: 3 },
+      { label: 'Failure rate %', data: [38.9, 20.0, 36.4, 66.7, 22.2], backgroundColor: '#EF9F27', borderRadius: 3 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('chart3'), {
+  type: 'bar',
+  data: {
+    labels: ['Road', 'Rail', 'Sea', 'Air'],
+    datasets: [
+      { label: 'Avg defect rate', data: [2.62, 2.32, 2.32, 1.82], backgroundColor: '#1D9E75', borderRadius: 3 },
+      { label: 'Avg shipping cost', data: [5.54, 5.47, 4.97, 6.02], backgroundColor: '#7F77DD', borderRadius: 3 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('chart4'), {
+  type: 'bar',
+  data: {
+    labels: ['Skincare', 'Haircare', 'Cosmetics'],
+    datasets: [
+      { label: 'Total revenue', data: [241628, 174455, 161521], backgroundColor: '#378ADD', borderRadius: 3, yAxisID: 'y' },
+      { label: 'Avg defect rate', data: [2.33, 2.48, 1.92], backgroundColor: '#E24B4A', borderRadius: 3, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } },
+      y1: { position: 'right', grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
