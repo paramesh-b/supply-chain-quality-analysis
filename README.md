@@ -34,3 +34,12 @@ End-to-end supply chain quality analysis built to replicate ICQA analyst workflo
 3. Stock risk analysis — HIGH / MEDIUM / LOW classification
 4. Transportation mode impact on defect rates
 5. Revenue vs defect rate by product type
+
+## Query Results
+| Query | Result |
+|-------|--------|
+| Defect rate by product type | ![Q1](query_results/query1_defect_rate_by_product_type.png) |
+| Supplier quality ranking | ![Q2](query_results/query2_supplier_quality_ranking.png) |
+| Stock risk analysis | ![Q3](query_results/query3_stock_risk_analysis.png) |
+| Transport mode vs defect rate | ![Q4](query_results/query4_transport_mode_vs_defect_rate.png) |
+| Revenue vs defect rate | ![Q5](query_results/query5_revenue_vs_defect_rate.png) |
