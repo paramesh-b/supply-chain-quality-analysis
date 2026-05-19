@@ -60,3 +60,49 @@ SELECT
 FROM supply_chain_data2
 GROUP BY `Product type`
 ORDER BY total_revenue DESC;
+
+-- Query 6: Revenue at Risk by Supplier
+SELECT 
+    `Supplier name`,
+    ROUND(SUM(`Revenue generated`), 0) AS total_revenue,
+    ROUND(AVG(`Defect rates`), 2) AS avg_defect_rate_pct,
+    ROUND(SUM(`Revenue generated` * (`Defect rates` / 100)), 0) AS revenue_at_risk,
+    ROUND((SUM(`Revenue generated` * (`Defect rates` / 100)) / SUM(`Revenue generated`)) * 100, 1) AS pct_revenue_at_risk
+FROM supply_chain_data2
+GROUP BY `Supplier name`
+ORDER BY revenue_at_risk DESC;
+
+-- Query 7: Revenue at Risk by Transport Mode
+SELECT 
+    `Transportation modes`,
+    COUNT(*) AS total_shipments,
+    ROUND(AVG(`Defect rates`), 2) AS avg_defect_rate_pct,
+    ROUND(SUM(`Revenue generated`), 0) AS total_revenue,
+    ROUND(SUM(`Revenue generated` * (`Defect rates` / 100)), 0) AS revenue_at_risk
+FROM supply_chain_data2
+GROUP BY `Transportation modes`
+ORDER BY revenue_at_risk DESC;
+
+-- Query 8: Corrective Action Priority Table
+-- This is what you hand to an ops manager
+SELECT 
+    `Product type`,
+    `Supplier name`,
+    ROUND(AVG(`Defect rates`), 2) AS defect_rate_pct,
+    ROUND(SUM(`Revenue generated`), 0) AS total_revenue,
+    ROUND(SUM(`Revenue generated` * (`Defect rates` / 100)), 0) AS revenue_at_risk,
+    CASE 
+        WHEN AVG(`Defect rates`) >= 3 THEN 'CRITICAL'
+        WHEN AVG(`Defect rates`) >= 2 THEN 'HIGH'
+        WHEN AVG(`Defect rates`) >= 1 THEN 'MEDIUM'
+        ELSE 'LOW'
+    END AS priority,
+    CASE
+        WHEN AVG(`Defect rates`) >= 3 THEN 'Immediate CAP + supplier audit + incoming inspection gate'
+        WHEN AVG(`Defect rates`) >= 2 THEN 'Increase cycle count frequency on this SKU range'
+        WHEN AVG(`Defect rates`) >= 1 THEN 'Flag for next ops review'
+        ELSE 'Standard process — monitor only'
+    END AS recommended_action
+FROM supply_chain_data2
+GROUP BY `Product type`, `Supplier name`
+ORDER BY revenue_at_risk DESC;
