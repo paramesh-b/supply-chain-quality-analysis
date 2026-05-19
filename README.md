@@ -51,7 +51,7 @@ The analysis goes beyond finding defect rates — it quantifies financial exposu
 
 ## Dashboard Preview
 
-[![Dashboard](https://github.com/paramesh-b/supply-chain-quality-analysis/raw/main/dashboard_screenshot.png)](https://github.com/paramesh-b/supply-chain-quality-analysis/blob/main/dashboard_screenshot.png)
+[![Dashboard](https://github.com/paramesh-b/supply-chain-quality-analysis/raw/main/dashboard_screenshot.png.png)](https://github.com/paramesh-b/supply-chain-quality-analysis/blob/main/dashboard_screenshot.png.png)
 
 ## SQL Queries Covered
 
